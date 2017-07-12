@@ -1,24 +1,39 @@
 class Api::PostsController < ApplicationController
   def index
-    p 'index of all posts'
+    if current_user
+      @followed_users = current_user.followed_users
+      @posts = []
+      @followed_users.each do |user|
+        @posts.concat(user.posts)
+      end
+    else
+      @posts = Post.find()
+    end
+    render json: @posts
   end
 
   def create
-    p 'created a post'
+    @post = Post.create!(post_params)
   end
 
   def update
-    id = params[:id]
-    p "edited post #{id}"
+    @post = Post.find(params[:id])
+    @post.update_attributes(post_params)
   end
 
   def show
-    id = params[:id]
-    p "showed post #{id}"
+    @post = Post.find(params[:id])
+    render json: @post
   end
 
   def destroy
-    id = params[:id]
-    p "destroyed post #{id}"
+    @post = Post.find(params[:id])
+    @post.destroy!
+  end
+
+  private
+
+  def post_params
+    params.require(:post).permit(:title, :draft, :author, :content)
   end
 end

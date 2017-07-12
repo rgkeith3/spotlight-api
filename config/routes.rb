@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
+  devise_for :users
 
+  root to: 'api/posts#index'
   namespace :api do
-    resource :session, only: [:create, :destroy]
-    resources :users, only: [:create, :update]
     resources :posts, only: [:index, :show, :create, :update, :destroy]
 
     post 'follow', to: 'follow#create'
